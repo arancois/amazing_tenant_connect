@@ -1,0 +1,23 @@
+// Consumption View : ZC_RE_RentalObject (exposed)
+// (+) Insert by [PERNR-REDACTED] dated 12.06.2026 for CR_123
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'RE Contract API - Rental Object'
+@Metadata.allowExtensions: true
+define view entity ZC_RE_RentalObject
+  as projection on ZI_RE_RentalObject
+{
+  key InternalRENumber,
+  key ObjectNumber,
+      ContractObjectNumber,
+      AssignmentValidFrom,
+      AssignmentValidTo,
+      CompanyCode,
+      ProjectNumber,
+      RentalObjectNumber,
+      UnitId,
+      Floor,
+      FloorLevel,
+      PartOfBuilding,
+      UsageType,
+      _Measurement : redirected to ZC_RE_Measurement
+}

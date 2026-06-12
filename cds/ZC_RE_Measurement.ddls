@@ -1,0 +1,19 @@
+// Consumption View : ZC_RE_Measurement (exposed)
+// (+) Insert by [PERNR-REDACTED] dated 12.06.2026 for CR_123
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'RE Contract API - Measurement'
+@Metadata.allowExtensions: true
+define view entity ZC_RE_Measurement
+  as projection on ZI_RE_Measurement
+{
+  key InternalRENumber,
+  key MeasurementType,
+  key ValidFrom,
+      ValidTo,
+      CompanyCode,
+      ProjectNumber,
+      RentalObjectNumber,
+      @Semantics.quantity.unitOfMeasure: 'MeasurementUnit'
+      FloorArea,
+      MeasurementUnit
+}

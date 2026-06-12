@@ -1,0 +1,40 @@
+// =====================================================================
+// Consumption (Projection) View : ZC_RE_Contract   (ROOT, exposed)
+// Projects ZI_RE_Contract for the OData V4 Web API (CR_123).
+// Read-only: no behaviour definition -> service is query-only.
+// (+) Insert by [PERNR-REDACTED] dated 12.06.2026 for CR_123
+// =====================================================================
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'RE Contract API - Contract'
+@Metadata.allowExtensions: true
+@Search.searchable: true
+define root view entity ZC_RE_Contract
+  as projection on ZI_RE_Contract
+{
+      @Search.defaultSearchElement: true
+  key InternalRENumber,
+      ObjectNumber,
+      @Search.defaultSearchElement: true
+      ContractNumber,
+      MainContractNumber,
+      CompanyCode,
+      BusinessEntityNumber,
+      ReferenceNumber,
+      @Search.defaultSearchElement: true
+      ContractName,
+      ContractType,
+      ContractClass,
+      ContractCategory,
+      CommencementDate,
+      ExpiryDate,
+      AbsoluteEndDate,
+      TerminationDate,
+      SalesRelevant,
+      DeletionStatus,
+      SalesCollectInd,
+      // navigations exposed to the third party
+      _BPRelation     : redirected to ZC_RE_BPRelation,
+      _RentalObject   : redirected to ZC_RE_RentalObject,
+      _BusinessEntity : redirected to ZC_RE_BusinessEntity,
+      _Company        : redirected to ZC_RE_Company
+}
