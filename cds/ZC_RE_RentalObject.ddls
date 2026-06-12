@@ -1,5 +1,7 @@
 // Consumption View : ZC_RE_RentalObject (exposed)
 // (+) Insert by [PERNR-REDACTED] dated 12.06.2026 for CR_123
+// (+) Update by [PERNR-REDACTED] dated 12.06.2026 for CR_123 —
+//     exposed _PartOfBuilding navigation.
 @AccessControl.authorizationCheck: #CHECK
 @EndUserText.label: 'RE Contract API - Rental Object'
 @Metadata.allowExtensions: true
@@ -19,5 +21,6 @@ define view entity ZC_RE_RentalObject
       FloorLevel,
       PartOfBuilding,
       UsageType,
-      _Measurement : redirected to ZC_RE_Measurement
+      _Measurement     : redirected to ZC_RE_Measurement,
+      _PartOfBuilding  : redirected to ZC_RE_PartOfBuilding
 }

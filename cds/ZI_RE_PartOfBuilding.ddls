@@ -1,0 +1,25 @@
+// =====================================================================
+// Interface View : ZI_RE_PartOfBuilding   (Location)
+// Source table   : TIV1B (Part of Building text)            [FS file 5]
+// Filter         : Language = English ('E')  [FS file 5]
+// Assumption     : TIV1B keyed by BUKRS/SWENR/SGEBT/SPRAS — verify the
+//                  exact key/fields in SE11 before activation (F-06).
+// VDM type       : Basic Interface View   | Tier 2
+// Tier-3 note    : TIV1B read directly; no released replacement on-prem.
+// (+) Insert by [PERNR-REDACTED] dated 12.06.2026 for CR_123
+// =====================================================================
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'RE Interface - Part of Building (Location)'
+@Metadata.ignorePropagatedAnnotations: true
+@VDM.viewType: #BASIC
+@ObjectModel.usageType: { serviceQuality: #D, sizeCategory: #S, dataClass: #MASTER }
+define view entity ZI_RE_PartOfBuilding
+  as select from tiv1b
+{
+  key bukrs as CompanyCode,
+  key swenr as ProjectNumber,
+  key sgebt as LocationCode,
+  key spras as Language,
+      xgebm as Description
+}
+where spras = 'E'

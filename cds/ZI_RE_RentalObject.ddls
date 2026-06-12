@@ -6,6 +6,8 @@
 // Notes          : Level = last 2 digits of SSTOCKW (floor)
 // VDM type       : Basic Interface View   | Tier 2
 // (+) Insert by [PERNR-REDACTED] dated 12.06.2026 for CR_123
+// (+) Update by [PERNR-REDACTED] dated 12.06.2026 for CR_123 —
+//     added _PartOfBuilding navigation (TIV1B location text).
 // =====================================================================
 // Tier-3 note (F-03): VIBDRO/VIBDOBJASS are RE-FX tables read directly;
 // no released replacement available -> Tier-3 accepted for this interface.
@@ -19,12 +21,15 @@ define view entity ZI_RE_RentalObject
     inner join vibdobjass as ObjAssign
       on ObjAssign.objnrtrg = RentalObject.objnr
 
-  association [0..*] to ZI_RE_Measurement as _Measurement
+  association [0..*] to ZI_RE_Measurement    as _Measurement
     on $projection.InternalRENumber = _Measurement.InternalRENumber
+  association [0..1] to ZI_RE_PartOfBuilding as _PartOfBuilding
+    on  $projection.CompanyCode    = _PartOfBuilding.CompanyCode
+    and $projection.ProjectNumber  = _PartOfBuilding.ProjectNumber
+    and $projection.PartOfBuilding = _PartOfBuilding.LocationCode
 {
   key RentalObject.intreno              as InternalRENumber,
   key RentalObject.objnr                as ObjectNumber,
-      // contract object number (link back to the owning contract)
       ObjAssign.objnrsrc                as ContractObjectNumber,
       ObjAssign.validfrom               as AssignmentValidFrom,
       ObjAssign.validto                 as AssignmentValidTo,
@@ -33,8 +38,6 @@ define view entity ZI_RE_RentalObject
       RentalObject.smenr                as RentalObjectNumber,
       RentalObject.xmetxt               as UnitId,
       RentalObject.sstockw              as Floor,
-      // FS: Level = last 2 digits of SSTOCKW.
-      // F-01 fix: guard against blank/short SSTOCKW to avoid substring dump.
       case when length( RentalObject.sstockw ) >= 2
            then substring( RentalObject.sstockw,
                            length( RentalObject.sstockw ) - 1, 2 )
@@ -42,6 +45,7 @@ define view entity ZI_RE_RentalObject
       end                                 as FloorLevel,
       RentalObject.sgebt                as PartOfBuilding,
       RentalObject.snunr                as UsageType,
-      _Measurement
+      _Measurement,
+      _PartOfBuilding
 }
 where RentalObject.snunr < '5000'

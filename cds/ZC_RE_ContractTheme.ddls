@@ -1,0 +1,14 @@
+// Consumption View : ZC_RE_ContractTheme (exposed)
+// (+) Insert by [PERNR-REDACTED] dated 12.06.2026 for CR_123
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'RE Contract API - Contract Theme'
+@Metadata.allowExtensions: true
+@Search.searchable: true
+define view entity ZC_RE_ContractTheme
+  as projection on ZI_RE_ContractTheme
+{
+      @Search.defaultSearchElement: true
+  key ThemeCode,
+      @Search.defaultSearchElement: true
+      Description
+}

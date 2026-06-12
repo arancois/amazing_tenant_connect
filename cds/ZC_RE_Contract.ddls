@@ -3,6 +3,9 @@
 // Projects ZI_RE_Contract for the OData V4 Web API (CR_123).
 // Read-only: no behaviour definition -> service is query-only.
 // (+) Insert by [PERNR-REDACTED] dated 12.06.2026 for CR_123
+// (+) Update by [PERNR-REDACTED] dated 12.06.2026 for CR_123 —
+//     exposed new navigations (ObjectAssignment, LeasePerform,
+//     ContractClass, ContractCategory).
 // =====================================================================
 @AccessControl.authorizationCheck: #CHECK
 @EndUserText.label: 'RE Contract API - Contract'
@@ -32,9 +35,12 @@ define root view entity ZC_RE_Contract
       SalesRelevant,
       DeletionStatus,
       SalesCollectInd,
-      // navigations exposed to the third party
-      _BPRelation     : redirected to ZC_RE_BPRelation,
-      _RentalObject   : redirected to ZC_RE_RentalObject,
-      _BusinessEntity : redirected to ZC_RE_BusinessEntity,
-      _Company        : redirected to ZC_RE_Company
+      _BPRelation       : redirected to ZC_RE_BPRelation,
+      _RentalObject     : redirected to ZC_RE_RentalObject,
+      _BusinessEntity   : redirected to ZC_RE_BusinessEntity,
+      _Company          : redirected to ZC_RE_Company,
+      _ObjectAssignment : redirected to ZC_RE_ObjectAssignment,
+      _LeasePerform     : redirected to ZC_RE_LeasePerform,
+      _ContractClass    : redirected to ZC_RE_ContractClass,
+      _ContractCategory : redirected to ZC_RE_ContractCategory
 }

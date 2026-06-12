@@ -15,6 +15,9 @@
 //   status). No released CDS replacement is generally available on-prem,
 //   so Tier-3 access is consciously accepted and documented here.
 // (+) Insert by [PERNR-REDACTED] dated 12.06.2026 for CR_123
+// (+) Update by [PERNR-REDACTED] dated 12.06.2026 for CR_123 —
+//     added _ObjectAssignment, _LeasePerform, _ContractClass,
+//     _ContractCategory navigations for the extended API surface.
 // =====================================================================
 @AccessControl.authorizationCheck: #CHECK
 @EndUserText.label: 'RE Interface - Contract (Root)'
@@ -23,22 +26,28 @@
 define root view entity ZI_RE_Contract
   as select from vicncn as Contract
 
-  // I0076 = "Contract is flagged for deletion / deactivated".
-  // Active (INACT = space) occurrence => contract treated as deleted.
   left outer to one join jest as DelStatus
     on  DelStatus.objnr = Contract.objnr
     and DelStatus.stat  = 'I0076'
     and DelStatus.inact = ' '
 
-  association [0..*] to ZI_RE_BPRelation     as _BPRelation
+  association [0..*] to ZI_RE_BPRelation      as _BPRelation
     on $projection.InternalRENumber = _BPRelation.InternalRENumber
-  association [0..*] to ZI_RE_RentalObject   as _RentalObject
+  association [0..*] to ZI_RE_RentalObject    as _RentalObject
     on $projection.ObjectNumber = _RentalObject.ContractObjectNumber
-  association [0..1] to ZI_RE_BusinessEntity as _BusinessEntity
+  association [0..1] to ZI_RE_BusinessEntity  as _BusinessEntity
     on  $projection.CompanyCode          = _BusinessEntity.CompanyCode
     and $projection.BusinessEntityNumber = _BusinessEntity.ProjectNumber
-  association [0..1] to ZI_RE_Company        as _Company
+  association [0..1] to ZI_RE_Company         as _Company
     on $projection.CompanyCode = _Company.CompanyCode
+  association [0..*] to ZI_RE_ObjectAssignment as _ObjectAssignment
+    on $projection.ObjectNumber = _ObjectAssignment.ContractObjectNumber
+  association [0..*] to ZI_RE_LeasePerform     as _LeasePerform
+    on $projection.InternalRENumber = _LeasePerform.InternalRENumber
+  association [0..1] to ZI_RE_ContractClass    as _ContractClass
+    on $projection.ContractClass = _ContractClass.ClassCode
+  association [0..1] to ZI_RE_ContractCategory as _ContractCategory
+    on $projection.ContractCategory = _ContractCategory.CategoryCode
 {
   key Contract.intreno                       as InternalRENumber,
       Contract.objnr                         as ObjectNumber,
@@ -57,17 +66,19 @@ define root view entity ZI_RE_Contract
       Contract.recnnotper                    as TerminationDate,
       Contract.srrelevant                    as SalesRelevant,
 
-      // ---- derived fields (FS §2.5) -------------------------------
       case when DelStatus.objnr is not null
            then 'D' else 'A' end             as DeletionStatus,
       case when Contract.srrelevant = 'X'
            then 'Y' else 'N' end             as SalesCollectInd,
 
-      // ---- associations ------------------------------------------
       _BPRelation,
       _RentalObject,
       _BusinessEntity,
-      _Company
+      _Company,
+      _ObjectAssignment,
+      _LeasePerform,
+      _ContractClass,
+      _ContractCategory
 }
 where  Contract.recnnr   like 'C%'
   and  Contract.recntype not in ( 'Z100', 'Z320', 'Z220' )

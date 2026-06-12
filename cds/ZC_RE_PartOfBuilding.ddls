@@ -1,0 +1,14 @@
+// Consumption View : ZC_RE_PartOfBuilding (exposed - Location)
+// (+) Insert by [PERNR-REDACTED] dated 12.06.2026 for CR_123
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'RE Contract API - Part of Building'
+@Metadata.allowExtensions: true
+define view entity ZC_RE_PartOfBuilding
+  as projection on ZI_RE_PartOfBuilding
+{
+  key CompanyCode,
+  key ProjectNumber,
+  key LocationCode,
+  key Language,
+      Description
+}
