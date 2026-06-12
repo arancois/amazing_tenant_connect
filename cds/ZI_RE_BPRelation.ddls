@@ -1,0 +1,32 @@
+// =====================================================================
+// Interface View : ZI_RE_BPRelation
+// Source table   : VIBPOBJREL (BP <-> RE Object Relationship)
+// Filter         : Role in TR0600 (Master Tenant w/ Customer), Z024
+//                  (Inter Company), Z025 (Related Parties)  [FS §1.1]
+// BP dates       : ValidFrom/ValidTo (downstream defaults handled by
+//                  consumer; raw values exposed here for fidelity)
+// VDM type       : Basic Interface View   | Tier 2
+// (+) Insert by [PERNR-REDACTED] dated 12.06.2026 for CR_123
+// =====================================================================
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'RE Interface - BP Object Relation'
+@Metadata.ignorePropagatedAnnotations: true
+@VDM.viewType: #BASIC
+@ObjectModel.usageType: { serviceQuality: #C, sizeCategory: #S, dataClass: #TRANSACTIONAL }
+define view entity ZI_RE_BPRelation
+  as select from vibpobjrel
+
+  association [0..1] to ZI_RE_BusinessPartner as _BusinessPartner
+    on $projection.BusinessPartner = _BusinessPartner.BusinessPartner
+  association [1..1] to ZI_RE_Contract as _Contract
+    on $projection.InternalRENumber = _Contract.InternalRENumber
+{
+  key intreno   as InternalRENumber,
+  key partner   as BusinessPartner,
+  key role      as BPRole,
+      validfrom as ValidFrom,
+      validto   as ValidTo,
+      _BusinessPartner,
+      _Contract
+}
+where role in ( 'TR0600', 'Z024', 'Z025' )

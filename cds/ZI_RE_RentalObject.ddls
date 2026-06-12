@@ -1,0 +1,47 @@
+// =====================================================================
+// Interface View : ZI_RE_RentalObject
+// Source tables  : VIBDRO (Rental Object) joined to VIBDOBJASS
+//                  (Object Assignment) to carry the owning contract OBJNR
+// Filter         : Usage type SNUNR < 5000  [FS §1.1, item 3]
+// Notes          : Level = last 2 digits of SSTOCKW (floor)
+// VDM type       : Basic Interface View   | Tier 2
+// (+) Insert by [PERNR-REDACTED] dated 12.06.2026 for CR_123
+// =====================================================================
+// Tier-3 note (F-03): VIBDRO/VIBDOBJASS are RE-FX tables read directly;
+// no released replacement available -> Tier-3 accepted for this interface.
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'RE Interface - Rental Object'
+@Metadata.ignorePropagatedAnnotations: true
+@VDM.viewType: #BASIC
+@ObjectModel.usageType: { serviceQuality: #C, sizeCategory: #M, dataClass: #MASTER }
+define view entity ZI_RE_RentalObject
+  as select distinct from vibdro as RentalObject
+    inner join vibdobjass as ObjAssign
+      on ObjAssign.objnrtrg = RentalObject.objnr
+
+  association [0..*] to ZI_RE_Measurement as _Measurement
+    on $projection.InternalRENumber = _Measurement.InternalRENumber
+{
+  key RentalObject.intreno              as InternalRENumber,
+  key RentalObject.objnr                as ObjectNumber,
+      // contract object number (link back to the owning contract)
+      ObjAssign.objnrsrc                as ContractObjectNumber,
+      ObjAssign.validfrom               as AssignmentValidFrom,
+      ObjAssign.validto                 as AssignmentValidTo,
+      RentalObject.bukrs                as CompanyCode,
+      RentalObject.swenr                as ProjectNumber,
+      RentalObject.smenr                as RentalObjectNumber,
+      RentalObject.xmetxt               as UnitId,
+      RentalObject.sstockw              as Floor,
+      // FS: Level = last 2 digits of SSTOCKW.
+      // F-01 fix: guard against blank/short SSTOCKW to avoid substring dump.
+      case when length( RentalObject.sstockw ) >= 2
+           then substring( RentalObject.sstockw,
+                           length( RentalObject.sstockw ) - 1, 2 )
+           else RentalObject.sstockw
+      end                                 as FloorLevel,
+      RentalObject.sgebt                as PartOfBuilding,
+      RentalObject.snunr                as UsageType,
+      _Measurement
+}
+where RentalObject.snunr < '5000'
