@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- =================================================================
+     Service Binding : ZAPI_RE_CONTRACT_O4
+     Binding type    : ODATA V4 - Web API  (system-to-system, not UI)
+     Service Def     : ZAPI_RE_CONTRACT
+     Notes           : After import, activate and 'Publish' the binding
+                       (Local Service Endpoint).  No Gateway co-deployment
+                       needed on S/4HANA (embedded steampunk/ABAP stack).
+     (+) Insert by [PERNR-REDACTED] dated 12.06.2026 for CR_123
+     ================================================================= -->
+<SRVB>
+  <BINDING_NAME>ZAPI_RE_CONTRACT_O4</BINDING_NAME>
+  <BINDING_TYPE>ODATA</BINDING_TYPE>
+  <BINDING_VERSION>V4</BINDING_VERSION>
+  <BINDING_CATEGORY>WEB_API</BINDING_CATEGORY>
+  <SERVICE_DEFINITION>ZAPI_RE_CONTRACT</SERVICE_DEFINITION>
+  <RELEASE_STATE>RELEASED</RELEASE_STATE>
+</SRVB>
