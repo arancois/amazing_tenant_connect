@@ -1,0 +1,13 @@
+// Consumption View : ZC_RE_Company (exposed)
+// (+) Insert by [PERNR-REDACTED] dated 12.06.2026 for CR_123
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'RE Contract API - Company'
+@Metadata.allowExtensions: true
+define view entity ZC_RE_Company
+  as projection on ZI_RE_Company
+{
+  key CompanyCode,
+      CompanyName,
+      Currency,
+      Country
+}

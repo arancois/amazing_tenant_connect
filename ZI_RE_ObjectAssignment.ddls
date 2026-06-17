@@ -1,0 +1,51 @@
+// =====================================================================
+// Interface View : ZI_RE_ObjectAssignment   (Lease Unit)
+// Source tables  : VIBDOBJASS (Object Assignment) ⋈ VICNCN (Contract,
+//                  via OBJNRSRC) ⋈ VIBDRO (Rental Object, via OBJNRTRG)
+// Purpose        : Validity-dated link between a contract and a rental
+//                  object  [FS file 12 - LEASEUNIT]
+// Filter         : Contract no RECNNR like 'C%'                [FS §1.1]
+// Defaults [FS]   : CommencementDate = VALIDFROM, else RECNBEG
+//                   EndDate          = VALIDTO,   else RECNENDABS
+// VDM type       : Basic Interface View   | Tier 2
+// Tier-3 note (F-03): VIBDOBJASS/VICNCN/VIBDRO read directly (RE-FX);
+//   no released replacement on-prem -> Tier-3 consciously accepted.
+// (+) Insert by [PERNR-REDACTED] dated 12.06.2026 for CR_123
+// =====================================================================
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'RE Interface - Object Assignment (Lease Unit)'
+@Metadata.ignorePropagatedAnnotations: true
+@VDM.viewType: #BASIC
+@ObjectModel.usageType: { serviceQuality: #C, sizeCategory: #M, dataClass: #TRANSACTIONAL }
+define view entity ZI_RE_ObjectAssignment
+  as select from vibdobjass as Assign
+    inner join vicncn as Contract
+      on Contract.objnr = Assign.objnrsrc
+    inner join vibdro  as RO
+      on RO.objnr = Assign.objnrtrg
+
+  association [1..1] to ZI_RE_Contract as _Contract
+    on $projection.InternalRENumber = _Contract.InternalRENumber
+{
+  key Contract.intreno                  as InternalRENumber,
+  key Assign.objnrsrc                   as ContractObjectNumber,
+  key Assign.objnrtrg                   as RentalObjectObjectNumber,
+  key Assign.validfrom                  as AssignmentValidFrom,
+      Contract.recnnr                   as ContractNumber,
+      RO.bukrs                          as CompanyCode,
+      RO.swenr                          as ProjectNumber,
+      RO.smenr                          as RentalObjectNumber,
+      RO.xmetxt                         as UnitId,
+
+      // ---- derived dates (FS file 12) -----------------------------
+      case when Assign.validfrom is not initial and Assign.validfrom <> '00000000'
+           then Assign.validfrom else Contract.recnbeg
+      end                               as CommencementDate,
+      case when Assign.validto is not initial and Assign.validto <> '00000000'
+           then Assign.validto else Contract.recnendabs
+      end                               as EndDate,
+      Assign.validto                    as TerminationDate,
+
+      _Contract
+}
+where Contract.recnnr like 'C%'

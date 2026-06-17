@@ -1,0 +1,39 @@
+// =====================================================================
+// Interface View : ZI_RE_LeasePerform
+// Source tables  : VICNCN (Contract) ⋈ VIBPOBJREL (BP relation)
+// Purpose        : Contract performance record per BP   [FS file 11]
+// Filters [FS]    : RECNNR like 'C%'; RECNTYPE not in Z100/Z320/Z220;
+//                   BP role in TR0600 / Z024 / Z025
+// Constants [FS]  : Frequency = 'M'; Value = 0
+// VDM type       : Basic Interface View   | Tier 2
+// Tier-3 note    : VICNCN/VIBPOBJREL read directly (RE-FX).
+// (+) Insert by [PERNR-REDACTED] dated 12.06.2026 for CR_123
+// =====================================================================
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'RE Interface - Lease Perform'
+@Metadata.ignorePropagatedAnnotations: true
+@VDM.viewType: #BASIC
+@ObjectModel.usageType: { serviceQuality: #C, sizeCategory: #M, dataClass: #TRANSACTIONAL }
+define view entity ZI_RE_LeasePerform
+  as select from vicncn as Contract
+    inner join vibpobjrel as BPRel
+      on BPRel.intreno = Contract.intreno
+
+  association [1..1] to ZI_RE_Contract as _Contract
+    on $projection.InternalRENumber = _Contract.InternalRENumber
+{
+  key Contract.intreno              as InternalRENumber,
+  key BPRel.partner                 as BusinessPartner,
+  key BPRel.role                    as BPRole,
+      Contract.recnnr               as ContractNumber,
+      Contract.bukrs                as CompanyCode,
+      Contract.benocn               as BusinessEntityNumber,
+      Contract.recnbeg              as CommencementDate,
+      Contract.recnend1st           as ExpiryDate,
+      cast( 'M' as abap.char( 1 ) ) as Frequency,
+      cast( 0   as abap.dec( 12, 0 ) ) as PerformValue,
+      _Contract
+}
+where Contract.recnnr   like 'C%'
+  and Contract.recntype not in ( 'Z100', 'Z320', 'Z220' )
+  and BPRel.role        in ( 'TR0600', 'Z024', 'Z025' )

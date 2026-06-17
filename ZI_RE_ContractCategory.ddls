@@ -1,0 +1,23 @@
+// =====================================================================
+// Interface View : ZI_RE_ContractCategory
+// Source table   : DD07T (domain fixed-value text)         [FS file 7]
+// Purpose        : Expose fixed values of domain ZRECNCAT.
+// Filter         : DOMNAME = 'ZRECNCAT', active, English
+// VDM type       : Basic Interface View   | Tier 3 (DDIC internals)
+// Clean-core flag (F-03): see ZI_RE_ContractClass.
+// (+) Insert by [PERNR-REDACTED] dated 12.06.2026 for CR_123
+// =====================================================================
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'RE Interface - Contract Category'
+@Metadata.ignorePropagatedAnnotations: true
+@VDM.viewType: #BASIC
+@ObjectModel.usageType: { serviceQuality: #D, sizeCategory: #S, dataClass: #CUSTOMIZING }
+define view entity ZI_RE_ContractCategory
+  as select from dd07t
+{
+  key cast( domvalue_l as abap.char( 4 ) ) as CategoryCode,
+      ddtext                               as Description
+}
+where domname    = 'ZRECNCAT'
+  and as4local   = 'A'
+  and ddlanguage = 'E'
